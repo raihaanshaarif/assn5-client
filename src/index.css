@@ -117,4 +117,8 @@
   body {
     @apply bg-background text-foreground;
   }
+
+}
+.outlet-container{
+  width: 100%;
 }

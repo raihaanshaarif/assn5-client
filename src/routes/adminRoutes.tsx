@@ -1,9 +1,10 @@
-import CreateAdmin from "@/pages/admin/createAdmin";
-import GetAdmin from "@/pages/admin/getAdmin";
+
 import { User } from "lucide-react";
 import { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
+import CreateAdmin from "@/pages/admin/CreateAdmin";
+import GetAdmin from "@/pages/admin/GetAdmin";
 
 export type TAdminPath = {
   title: string;
