@@ -10,13 +10,21 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useLoginMutation } from "@/redux/features/auth/authApi";
+import { toast } from "sonner";
+import { verifyToken } from "@/utils/verifyToken";
+import { setUser, TUser } from "@/redux/features/auth/authSlice";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "@/redux/hooks";
 
 type LoginFormInputs = {
   id: string;
   password: string;
 };
 
-export function LoginForm({
+
+
+export  function  LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
@@ -25,10 +33,33 @@ export function LoginForm({
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormInputs>();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
-  const onSubmit = (data: LoginFormInputs) => {
-    console.log("Form Values:", data);
+  const [login] = useLoginMutation();
+
+  const onSubmit =  async (userInfo: LoginFormInputs) => {
+    console.log("Form Values:", userInfo);
     // Handle login logic here (API call, authentication, etc.)
+    const toastId = toast.loading('Logging in');
+
+    try{
+        const res = await login(userInfo).unwrap();
+        const user = verifyToken(res.data.accessToken) as TUser;
+        dispatch(setUser({ user: user, token: res.data.accessToken }));
+        toast.success('Logged in', { id: toastId, duration: 2000 });
+  
+        
+          navigate(`/${user.role}/dashboard`);
+       
+
+
+    }catch(error){
+        toast.error('Something went wrong', { id: toastId, duration: 2000 });
+        console.log(error);
+    }
+
+
   };
 
   return (
@@ -41,7 +72,7 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)} >
             <div className="flex flex-col gap-6">
               {/* Email Field */}
               <div className="grid gap-2">
