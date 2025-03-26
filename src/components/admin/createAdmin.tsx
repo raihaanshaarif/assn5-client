@@ -1,7 +1,7 @@
 "use client"
 
-import { toast } from "sonner"
-import { useForm } from "react-hook-form"
+
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 
@@ -22,6 +22,10 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
+import { useCreateAdminMutation } from "@/redux/features/admin/adminApi"
+import { toast } from "sonner"
+
+
 
 const formSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -44,33 +48,44 @@ export default function CreateAdminForm() {
       gender: ""
     }
   })
+  const [createAdmin, ] = useCreateAdminMutation()
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      console.log(values);
 
-    // const {firstName, lastName, password, email, contactNo, gender} = values
+
+  const onSubmit: SubmitHandler<FieldValues>  = async(values) =>{
+    const toastId = toast.loading('Creating...');
 
     const createAdmininfo = {
-        password: values.password,
-        admin: {
-            name: {
-                firstName: values.firstName,
-                lastName: values.lastName
-            },
-            gender: values.gender ,
-            email: values.email ,
-            contactNo: values.contactNo,
-        }
-    }
+      password: values.password,
+      admin: {
+          name: {
+              firstName: values.firstName,
+              lastName: values.lastName
+          },
+          gender: values.gender ,
+          email: values.email ,
+          contactNo: values.contactNo,
+      }
+  }
 
-    console.log(createAdmininfo);
-
-      toast.success("Admin created successfully!");
-    } catch (error) {
-      console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
-    }
+    try {       
+  
+      const result = await createAdmin(createAdmininfo)
+      if ("error" in result) {
+        const errorMessage =
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (result.error as any)?.data?.message || "Failed to create admin";
+        toast.error(errorMessage, { id: toastId });
+      } else {
+        toast.success("Admin created successfully", { id: toastId });
+        // ✅ Reset the form after successful submission
+        form.reset();
+      }
+       
+      } catch (err) {
+        toast.error("Something went wrong", { id: toastId });
+        console.log(err);
+      }
   }
 
   return (
