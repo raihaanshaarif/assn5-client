@@ -12,6 +12,10 @@ const router = createBrowserRouter([
     children: routeGenerator(adminPaths),
   },
   {
+    path: "/",
+    element: <Login />,
+  },
+  {
     path: "/login",
     element: <Login />,
   },

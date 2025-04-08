@@ -1,8 +1,9 @@
-import { ChevronDown, Home, Inbox, User } from "lucide-react";
+import { ChevronDown, ChevronUp, Home,  User, User2 } from "lucide-react";
 
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -19,7 +20,15 @@ import {
   CollapsibleContent,
 } from "@/components/ui/collapsible";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+
+import { logout, selectCurrentUser } from "@/redux/features/auth/authSlice";
+import { useAppDispatch } from "@/redux/hooks";
+import { useSelector } from "react-redux";
+import { toast } from "sonner";
+
+
 
 const items = [
   {
@@ -42,15 +51,25 @@ const items = [
         icon: User,
       },
     ],
-  },
-  {
-    title: "Login",
-    url: "/login",
-    icon: Inbox,
-  },
+  }
+
 ];
 
 export function AppSidebar() {
+
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+ const user = useSelector(selectCurrentUser)
+ 
+
+
+
+const handleLogout = () =>{
+  dispatch(logout())
+  toast.success('Logged Out', {  duration: 2000 });
+  navigate('/login')
+}
+
   return (
     <Sidebar>
       <SidebarContent>
@@ -106,6 +125,38 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton>
+                    <User2 /> {user?.userId ? (
+                                <p>User ID: {user.userId}</p>
+                              ) : (
+                                <p></p>
+                              )}
+                    <ChevronUp className="ml-auto" />
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  side="top"
+                  className="w-[--radix-popper-anchor-width]"
+                >
+                  {/* <DropdownMenuItem>
+                    <span>Account</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <span>Billing</span>
+                  </DropdownMenuItem> */}
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <span >Sign out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
     </Sidebar>
   );
 }
