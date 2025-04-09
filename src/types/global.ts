@@ -23,3 +23,19 @@ export type TResponse<T> = {
   success: boolean;
   message: string;
 };
+
+export type TUser = {
+  _id: string;
+  id: string;
+  user: string;
+  name: {
+    firstName: string;
+    lastName: string;
+    _id: string;
+  };
+  gender: 'male' | 'female' | 'other'; // You can adjust based on your app logic
+  email: string;
+  contactNo: string;
+  isDeleted: boolean;
+  fullName: string;
+};

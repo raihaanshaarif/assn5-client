@@ -1,10 +1,11 @@
+import GetAdminComponent from "@/components/admin/getAdminComponent";
 
 
 
 const GetAdmin = () => {
   return (
     <div>
-      <h1>Get Admin Page</h1>
+      <GetAdminComponent/>
     </div>
   );
 };

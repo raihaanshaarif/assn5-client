@@ -60,6 +60,7 @@ export function AppSidebar() {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
  const user = useSelector(selectCurrentUser)
+//  console.log(user)
  
 
 
@@ -132,7 +133,7 @@ const handleLogout = () =>{
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuButton>
                     <User2 /> {user?.userId ? (
-                                <p>User ID: {user.userId}</p>
+                                <p>User: {user.userId}</p>
                               ) : (
                                 <p></p>
                               )}
