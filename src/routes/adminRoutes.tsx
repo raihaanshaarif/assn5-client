@@ -1,10 +1,11 @@
 
-import { User } from "lucide-react";
+import { Box, User } from "lucide-react";
 import { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import CreateAdmin from "@/pages/admin/CreateAdmin";
 import GetAdmin from "@/pages/admin/GetAdmin";
+import CreateItem from "@/pages/item/createItem";
 
 export type TAdminPath = {
   title: string;
@@ -39,22 +40,22 @@ export const adminPaths = [
       },
     ],
   },
-  // {
-  //   title: "Items Management",
-  //   icon: User,
-  //   children: [
-  //     {
-  //       title: "Create Admin",
-  //       path: "/admin/create-item",
-  //       element: <CreateAdmin />,
-  //       icon: User,
-  //     },
-  //     {
-  //       title: "Get Admins",
-  //       path: "/admin/get-items",
-  //       element: <GetAdmin />,
-  //       icon: User,
-  //     },
-  //   ],
-  // },
+  {
+    title: "Items Management",
+    icon: Box,
+    children: [
+      {
+        title: "Create Item",
+        path: "/admin/create-item",
+        element: <CreateItem />,
+        icon: User,
+      },
+      {
+        title: "Get Items",
+        path: "/admin/get-items",
+        element: <GetAdmin />,
+        icon: User,
+      },
+    ],
+  },
 ];
