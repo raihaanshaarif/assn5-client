@@ -1,32 +1,19 @@
 import { TSidebarItem, TUserPath } from "@/types/sidebar.type";
-import { NavLink } from "react-router-dom";
 
-export const sidebarItemsGenerator = (items: TUserPath[], role: string) => {
+export const sidebarItemsGenerator = (items: TUserPath[])=> {
   const sidebarItems = items.reduce((acc: TSidebarItem[], item) => {
     if (item.title && item.icon) {
+      // Add the parent item to the sidebar
       acc.push({
         title: item.title,
-        url: item.path,
+        url: item.path, // Direct path for the parent item
         icon: item.icon,
-      });
-    }
-
-    if (item.children) {
-      acc.push({
-        title: item.title,
-        url: item.path,
-        icon: item.icon,
-        children: item.children.map((child) => {
-          if (child.title) {
-            return {
-              title: child.title,
-              icon: child.icon,
-              url: (
-                <NavLink to={`/${role}/${child.path}`}>{child.title}</NavLink>
-              ),
-            };
-          }
-        }),
+        // If the item has children, add them as sub-items
+        children: item.children ? item.children.map((child) => ({
+          title: child.title,
+          icon: child.icon,
+          url: child.path // Add child path correctly
+        })) : undefined, // Only add 'children' if they exist
       });
     }
 

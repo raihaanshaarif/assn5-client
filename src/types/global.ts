@@ -24,7 +24,7 @@ export type TResponse<T> = {
   message: string;
 };
 
-export type TUser = {
+export type TUserPayload = {
   _id: string;
   id: string;
   user: string;
@@ -38,4 +38,11 @@ export type TUser = {
   contactNo: string;
   isDeleted: boolean;
   fullName: string;
+};
+
+export type TUser = {
+  userId: string;
+  role: string;
+  iat: number;
+  exp: number;
 };

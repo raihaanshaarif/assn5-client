@@ -39,4 +39,22 @@ export const adminPaths = [
       },
     ],
   },
+  // {
+  //   title: "Items Management",
+  //   icon: User,
+  //   children: [
+  //     {
+  //       title: "Create Admin",
+  //       path: "/admin/create-item",
+  //       element: <CreateAdmin />,
+  //       icon: User,
+  //     },
+  //     {
+  //       title: "Get Admins",
+  //       path: "/admin/get-items",
+  //       element: <GetAdmin />,
+  //       icon: User,
+  //     },
+  //   ],
+  // },
 ];

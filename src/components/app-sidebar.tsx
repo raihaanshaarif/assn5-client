@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp, Home,  User, User2 } from "lucide-react";
+import { ChevronDown, ChevronUp, User2 } from "lucide-react";
 
 import {
   Sidebar,
@@ -20,56 +20,64 @@ import {
   CollapsibleContent,
 } from "@/components/ui/collapsible";
 
-import { Link, useNavigate } from "react-router-dom";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import {  NavLink, useNavigate } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
-import { logout, selectCurrentUser } from "@/redux/features/auth/authSlice";
-import { useAppDispatch } from "@/redux/hooks";
+import {
+  logout,
+  selectCurrentUser,
+  TUser,
+  useCurrentToken,
+} from "@/redux/features/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
+import { sidebarItemsGenerator } from "@/utils/sidebarItemsGenerator";
+import { adminPaths } from "@/routes/adminRoutes";
+import { verifyToken } from "@/utils/verifyToken";
+import { TSidebarItem } from "@/types/sidebar.type"; 
 
 
-
-const items = [
-  {
-    title: "Home",
-    url: "/admin/dashboard",
-    icon: Home,
-  },
-  {
-    title: "User Management",
-    icon: User,
-    children: [
-      {
-        title: "Create Admin",
-        url: "/admin/create-admin",
-        icon: User,
-      },
-      {
-        title: "Get Admins",
-        url: "/admin/get-admin",
-        icon: User,
-      },
-    ],
-  }
-
-];
+const userRole = {
+  ADMIN: "admin",
+  // FACULTY: 'faculty',
+};
 
 export function AppSidebar() {
+  const token = useAppSelector(useCurrentToken);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const currentUser = useSelector(selectCurrentUser);
 
-  const navigate = useNavigate()
-  const dispatch = useAppDispatch()
- const user = useSelector(selectCurrentUser)
-//  console.log(user)
+
+
  
+  let user;
+  if (token) {
+    user = verifyToken(token);
+  }
 
+let items: TSidebarItem[] = [];
 
+  switch ((user as TUser)!.role) {
+    case userRole.ADMIN:
+      items = sidebarItemsGenerator(adminPaths);
+      break;
+  
+    default:
+      break;
+  }
 
-const handleLogout = () =>{
-  dispatch(logout())
-  toast.success('Logged Out', {  duration: 2000 });
-  navigate('/login')
-}
+  const handleLogout = () => {
+    dispatch(logout());
+    toast.success("Logged Out", { duration: 2000 });
+    navigate("/login");
+  };
 
   return (
     <Sidebar>
@@ -80,8 +88,7 @@ const handleLogout = () =>{
             <SidebarMenu>
               {items.map((item) =>
                 item.children ? (
-                  <Collapsible key={item.title} defaultOpen={false}>
-                    {/* Parent Menu */}
+                  <Collapsible key={`${item.title}-${item.url}`} defaultOpen={false}>
                     <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton className="flex items-center gap-2 w-full">
@@ -92,19 +99,18 @@ const handleLogout = () =>{
                       </CollapsibleTrigger>
                     </SidebarMenuItem>
 
-                    {/* Sub Menu - OUTSIDE the parent li */}
                     <CollapsibleContent>
                       <SidebarMenuSub>
                         {item.children.map((child) => (
                           <SidebarMenuSubItem key={child.title}>
                             <SidebarMenuButton asChild>
-                              <Link
-                                to={child.url}
+                              <NavLink
+                                  to={String(child.url)} 
                                 className="flex items-center gap-2"
                               >
                                 <child.icon />
                                 <span>{child.title}</span>
-                              </Link>
+                              </NavLink>
                             </SidebarMenuButton>
                           </SidebarMenuSubItem>
                         ))}
@@ -114,10 +120,12 @@ const handleLogout = () =>{
                 ) : (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
-                      <Link to={item.url!} className="flex items-center gap-2">
+                      <NavLink 
+                      to={String(item.url)} 
+                      className="flex items-center gap-2">
                         <item.icon />
                         <span>{item.title}</span>
-                      </Link>
+                      </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )
@@ -126,38 +134,30 @@ const handleLogout = () =>{
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
       <SidebarFooter>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton>
-                    <User2 /> {user?.userId ? (
-                                <p>User: {user.userId}</p>
-                              ) : (
-                                <p></p>
-                              )}
-                    <ChevronUp className="ml-auto" />
-                  </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  side="top"
-                  className="w-[--radix-popper-anchor-width]"
-                >
-                  {/* <DropdownMenuItem>
-                    <span>Account</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <span>Billing</span>
-                  </DropdownMenuItem> */}
-                  <DropdownMenuItem onClick={handleLogout}>
-                    <span >Sign out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton>
+                  <User2 />
+                  {currentUser?.userId && <p>User: {currentUser.userId}</p>}
+                  <ChevronUp className="ml-auto" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="top"
+                className="w-[--radix-popper-anchor-width]"
+              >
+                <DropdownMenuItem onClick={handleLogout}>
+                  <span>Sign out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   );
 }

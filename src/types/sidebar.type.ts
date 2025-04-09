@@ -11,8 +11,7 @@ export type TSidebarItem =
       url?: string | ReactNode;
       icon: LucideIcon;
       children?: TSidebarItem[];
-    }
-  | undefined;
+    };
 
 export type TUserPath = {
   title: string;

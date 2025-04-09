@@ -16,12 +16,10 @@ const router = createBrowserRouter([
     element:( 
       <ProtectedRoute role="admin">
     <App /> </ProtectedRoute>),
-    children: routeGenerator(adminPaths),
+    children: routeGenerator(adminPaths, ),
   },
-  {
-    path: "/",
-    element: <Login />,
-  },
+
+
   {
     path: "/login",
     element: <Login />,
