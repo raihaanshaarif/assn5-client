@@ -7,5 +7,5 @@ function App() {
     </>
   );
 }
-
+// best for Boiler
 export default App;
