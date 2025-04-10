@@ -1,5 +1,4 @@
 import {
-
   BaseQueryFn,
   FetchArgs,
   FetchBaseQueryError,
@@ -36,7 +35,9 @@ const baseQueryWithRefreshToken: BaseQueryFn<
 
   if (result.error) {
     const errorStatus = result.error.status;
-    const errorMessage = (result.error.data as { message?: string })?.message || "An error occurred.";
+    const errorMessage =
+      (result.error.data as { message?: string })?.message ||
+      "An error occurred.";
 
     if (errorStatus === 404 || errorStatus === 403) {
       toast.error(errorMessage);
@@ -45,10 +46,13 @@ const baseQueryWithRefreshToken: BaseQueryFn<
     if (errorStatus === 401) {
       console.log("Sending refresh token...");
 
-      const res = await fetch("http://localhost:5001/api/v1/auth/refresh-token", {
-        method: "POST",
-        credentials: "include",
-      });
+      const res = await fetch(
+        "http://localhost:5001/api/v1/auth/refresh-token",
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
 
       const data: { data?: { accessToken?: string } } = await res.json(); // ✅ Ensure data structure is correct
 
@@ -76,6 +80,6 @@ const baseQueryWithRefreshToken: BaseQueryFn<
 export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithRefreshToken,
-  tagTypes: ["semester", "courses", "offeredCourse"],
+  // tagTypes: ["semester", "courses", "offeredCourse"],
   endpoints: () => ({}),
 });

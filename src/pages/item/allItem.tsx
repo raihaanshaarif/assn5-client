@@ -1,11 +1,12 @@
+import AllItemComponent from "@/components/item/AllItemComponent";
 
-
-const allItem = () => {
-    return (
-        <div>
-            <h1>All Item Page</h1>
-        </div>
-    );
+const AllItem = () => {
+  return (
+    <div>
+      <h1>All Item Page</h1>
+      <AllItemComponent />
+    </div>
+  );
 };
 
-export default allItem;
+export default AllItem;
