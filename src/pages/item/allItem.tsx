@@ -1,10 +1,11 @@
-import AllItemComponent from "@/components/item/AllItemComponent";
+
+import AllItemListComponent from "@/components/item/AllItemListComponent";
 
 const AllItem = () => {
   return (
     <div>
       <h1>All Item Page</h1>
-      <AllItemComponent />
+      <AllItemListComponent />
     </div>
   );
 };
