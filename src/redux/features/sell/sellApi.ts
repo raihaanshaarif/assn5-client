@@ -1,6 +1,6 @@
 import { baseApi } from "@/redux/api/baseApi";
 
-const itemApi = baseApi.injectEndpoints({
+const sellApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         createSell: builder.mutation({
             query: (data) => ({
@@ -52,4 +52,4 @@ const itemApi = baseApi.injectEndpoints({
 
 export const {
 useCreateSellMutation, useGetSellQuery
-} = itemApi;
+} = sellApi;
