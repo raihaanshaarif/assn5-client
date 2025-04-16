@@ -6,6 +6,8 @@ import CreateAdmin from "@/pages/admin/CreateAdmin";
 import GetAdmin from "@/pages/admin/GetAdmin";
 import CreateItem from "@/pages/item/createItem";
 import AllItem from "@/pages/item/allItem";
+import CreateSale from "@/pages/sale/CreateSale";
+import GetSale from "@/pages/sale/GetSale";
 
 export type TAdminPath = {
   title: string;
@@ -54,6 +56,24 @@ export const adminPaths = [
         title: "Get Items",
         path: "/admin/get-items",
         element: <AllItem />,
+        icon: User,
+      },
+    ],
+  },
+  {
+    title: "Sales Management",
+    icon: Box,
+    children: [
+      {
+        title: "Create Sale",
+        path: "/admin/create-sale",
+        element: <CreateSale />,
+        icon: User,
+      },
+      {
+        title: "Get Sales",
+        path: "/admin/get-sales",
+        element: <GetSale />,
         icon: User,
       },
     ],
