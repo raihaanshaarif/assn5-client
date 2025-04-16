@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 export type Item = {
+  _id: string
   id: string
   name: string
   category: string
@@ -48,7 +49,7 @@ export type Item = {
 }
 
 import { ColumnDef } from "@tanstack/react-table"
-import { useGetItemQuery } from "@/redux/features/items/itemApi"
+import { useGetItemQuery, useUpdateItemMutation } from "@/redux/features/items/itemApi"
 import {
   Dialog,
   DialogContent,
@@ -56,11 +57,23 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog"
+import { toast } from "sonner"
 
 const AllItemListComponent = () => {
-  const { data, isLoading, error } = useGetItemQuery({})
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
 
-  const items = data?.data || []
+  // Fetch items with pagination params
+  const { data, isLoading, error } = useGetItemQuery({
+    page: pagination.pageIndex + 1,
+    limit: pagination.pageSize,
+  });
+  const [updateItem] = useUpdateItemMutation();
+
+  const items = data?.data ?? [];
+  const totalPages = data?.meta?.totalPage ?? 1;
 
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -92,6 +105,25 @@ const AllItemListComponent = () => {
       // Call delete API or dispatch Redux action here
     }
   }
+
+  // Edit item save to send it to api 🌄 
+  const handleSave = async () => {
+    if (selectedItem) {
+      try {
+        console.log("Saving edited item:", selectedItem);
+        // Pass the id and data to the updateItem mutation
+        await updateItem({ id: selectedItem._id, data: selectedItem }).unwrap();
+        toast.success("Item updated successfully!")
+        // Optionally, you can refetch the item list or update the local state here
+        setIsEditModalOpen(false); // Close the modal after saving
+       
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+        toast.error(`Failed to update item. ${errorMessage}`);
+        
+      }
+    }
+  };
 
   const columns: ColumnDef<Item>[] = [
     {
@@ -157,14 +189,18 @@ const AllItemListComponent = () => {
       sorting,
       columnFilters,
       columnVisibility,
+      pagination,
     },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    manualPagination: true, // Server-side pagination
+    pageCount: totalPages,
   })
 
   if (isLoading) return <p>Loading items...</p>
@@ -247,19 +283,28 @@ const AllItemListComponent = () => {
 
       {/* Pagination */}
       <div className="flex justify-end items-center space-x-2 py-4">
+        <span>
+          Page {pagination.pageIndex + 1} of {totalPages}
+        </span>
         <Button
           variant="outline"
           size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
+          onClick={() => setPagination((prev) => ({
+            ...prev,
+            pageIndex: Math.max(prev.pageIndex - 1, 0),
+          }))}
+          disabled={pagination.pageIndex === 0}
         >
           Previous
         </Button>
         <Button
           variant="outline"
           size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
+          onClick={() => setPagination((prev) => ({
+            ...prev,
+            pageIndex: Math.min(prev.pageIndex + 1, totalPages - 1),
+          }))}
+          disabled={pagination.pageIndex + 1 >= totalPages}
         >
           Next
         </Button>
@@ -272,13 +317,27 @@ const AllItemListComponent = () => {
             <DialogHeader>
               <DialogTitle>Item Details</DialogTitle>
               <DialogDescription>
-                <p><strong>Name:</strong> {selectedItem.name}</p>
-                <p><strong>Category:</strong> {selectedItem.category}</p>
-                <p><strong>Brand:</strong> {selectedItem.brand}</p>
-                <p><strong>Price:</strong> ${selectedItem.price.toFixed(2)}</p>
-                <p><strong>Quantity:</strong> {selectedItem.quantity}</p>
-                <p><strong>Created By:</strong> {selectedItem.createdBy}</p>
-                {/* Add more fields as needed */}
+                <div className="space-y-4">
+                  <div>
+                    <strong>Name:</strong> {selectedItem.name}
+                  </div>
+                  <div>
+                    <strong>Category:</strong> {selectedItem.category}
+                  </div>
+                  <div>
+                    <strong>Brand:</strong> {selectedItem.brand}
+                  </div>
+                  <div>
+                    <strong>Price:</strong> ${selectedItem.price.toFixed(2)}
+                  </div>
+                  <div>
+                    <strong>Quantity:</strong> {selectedItem.quantity}
+                  </div>
+                  <div>
+                    <strong>Created By:</strong> {selectedItem.createdBy}
+                  </div>
+                  {/* Add more fields as needed */}
+                </div>
               </DialogDescription>
             </DialogHeader>
             <Button onClick={handleCloseModal}>Close</Button>
@@ -365,15 +424,14 @@ const AllItemListComponent = () => {
                 Cancel
               </Button>
 
-              <Button
+              <Button 
                 onClick={() => {
-                  console.log("Saving edited item:", selectedItem)
-                  // You can make an API call to update the item here
-                  setIsEditModalOpen(false) // Close the modal after saving
-                }}
-              >
+                  handleSave()
+                    setIsEditModalOpen(false) // Close the modal after saving
+                }} >
                 Save
               </Button>
+              
             </div>
           </DialogContent>
         </Dialog>

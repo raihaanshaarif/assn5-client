@@ -2,31 +2,31 @@ import { baseApi } from "@/redux/api/baseApi";
 
 const itemApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
-        createItem: builder.mutation({
+        createSell: builder.mutation({
             query: (data) => ({
-                url: 'item/create-item',
+                url: 'sell/create-sell',
                 method: 'POST',
                 body: data,
             })
         }),
-        getItem: builder.query({
+        getSell: builder.query({
             query: (params) => ({
-                url: 'item',
+                url: 'sell',
                 method: 'GET',
                 params, // Accepts { page, limit } and passes as query params
             }),
             providesTags: [{ type: "item", id: "LIST" }],
         }),
-        getItemById: builder.query({
+        getSellById: builder.query({
             query: (id) => ({
-                url: `item/${id}`,
+                url: `sell/${id}`,
                 method: 'GET'
             }),
             providesTags: ( id) => [{ type: "item", id }],
         }),
-        updateItem: builder.mutation({
+        updateSell: builder.mutation({
             query: ({ id, data }) => ({
-                url: `item/${id}`,
+                url: `sell/${id}`,
                 method: 'PATCH',
                 body: data,
             }),
@@ -36,9 +36,9 @@ const itemApi = baseApi.injectEndpoints({
                 { type: "item", id },
             ],
         }),
-        deleteItem: builder.mutation({
+        deleteSell: builder.mutation({
             query: (id) => ({
-                url: `item/${id}`,
+                url: `sell/${id}`,
                 method: 'DELETE',
             }),
             // Invalidate the cache for the item list and the specific item after delete
@@ -51,9 +51,5 @@ const itemApi = baseApi.injectEndpoints({
 });
 
 export const {
-    useCreateItemMutation,
-    useGetItemQuery,
-    useGetItemByIdQuery,
-    useUpdateItemMutation,
-    useDeleteItemMutation,
+useCreateSellMutation, useGetSellQuery
 } = itemApi;

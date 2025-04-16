@@ -7,6 +7,9 @@ import { store } from "./redux/store.ts";
 import { Provider } from "react-redux";
 import { Toaster } from "@/components/ui/sonner"
 
+
+
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
      <Provider store={store}>
